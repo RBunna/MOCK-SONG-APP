@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
-import '../../../../data/repositories/artists/artist_repository.dart';
+import '../../../../data/repositories/artist/artist_repository.dart';
 import '../../../../data/repositories/songs/song_repository.dart';
-import '../../../../model/artists/artist.dart';
+import '../../../../model/artist/artist.dart';
 import '../../../states/player_state.dart';
 import '../../../../model/songs/song.dart';
 import '../../../utils/async_value.dart';
+import 'library_item_data.dart';
 
 class LibraryViewModel extends ChangeNotifier {
   final SongRepository songRepository;
   final ArtistRepository artistRepository;
+
   final PlayerState playerState;
 
-  AsyncValue<Map<Song, Artist>> songsValue = AsyncValue.loading();
+  AsyncValue<List<LibraryItemData>> data = AsyncValue.loading();
 
   LibraryViewModel({
     required this.songRepository,
@@ -36,26 +38,34 @@ class LibraryViewModel extends ChangeNotifier {
 
   void fetchSong() async {
     // 1- Loading state
-    songsValue = AsyncValue.loading();
+    data = AsyncValue.loading();
     notifyListeners();
 
     try {
-      // 2- Fetch is successfull
+      // 1- Fetch songs
       List<Song> songs = await songRepository.fetchSongs();
+
+      // 2- Fethc artist
       List<Artist> artists = await artistRepository.fetchArtists();
 
-      final artistById = {for (final artist in artists) artist.id: artist};
+      // 3- Create the mapping artistid-> artist
+      Map<String, Artist> mapArtist = {};
+      for (Artist artist in artists) {
+        mapArtist[artist.id] = artist;
+      }
 
-      Map<Song, Artist> songsArtist = {
-        for (final song in songs)
-          song:
-              artistById[song.artist] ??
-              (throw Exception('Artist not found for song ${song.id}')),
-      };
-      songsValue = AsyncValue.success(songsArtist);
+      List<LibraryItemData> data = songs
+          .map(
+            (song) =>
+                LibraryItemData(song: song, artist: mapArtist[song.artistId]!),
+          )
+          .toList();
+
+      this.data = AsyncValue.success(data);
+
     } catch (e) {
       // 3- Fetch is unsucessfull
-      songsValue = AsyncValue.error(e);
+      data = AsyncValue.error(e);
     }
     notifyListeners();
   }

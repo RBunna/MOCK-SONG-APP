@@ -1,4 +1,5 @@
-import '../../model/artists/artist.dart';
+ 
+import '../../model/artist/artist.dart';
 
 class ArtistDto {
   static const String nameKey = 'name';
@@ -19,13 +20,11 @@ class ArtistDto {
   }
 
   /// Convert Artist to JSON
-  static Map<String, dynamic> toJson(Artist artist) {
+  Map<String, dynamic> toJson(Artist artist) {
     return {
-      artist.id: {
-        nameKey: artist.name,
-        genreKey: artist.genre,
-        imageUrlKey: artist.imageUrl.toString(),
-      },
+      nameKey: artist.name,
+      genreKey: artist.genre,
+      imageUrlKey: artist.imageUrl.toString(),
     };
   }
 }

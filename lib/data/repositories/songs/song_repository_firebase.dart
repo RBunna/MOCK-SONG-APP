@@ -4,22 +4,11 @@ import 'package:http/http.dart' as http;
 
 import '../../../model/songs/song.dart';
 import '../../dtos/song_dto.dart';
+import '../../firebase/firebase_database.dart';
 import 'song_repository.dart';
 
 class SongRepositoryFirebase extends SongRepository {
-  static const firebaseUrl = String.fromEnvironment('FIREBASE_URL');
-
-  late final Uri songsUri;
-
-  SongRepositoryFirebase() {
-    if (firebaseUrl.isEmpty) {
-      throw Exception(
-        'FIREBASE_URL is not set. Use --dart-define=FIREBASE_URL=your_url',
-      );
-    }
-
-    songsUri = Uri.https(Uri.parse(firebaseUrl).authority, '/songs.json');
-  }
+  final Uri songsUri = FirebaseConfig.baseUri.replace(path: '/songs.json',);
 
   @override
   Future<List<Song>> fetchSongs() async {
@@ -28,9 +17,12 @@ class SongRepositoryFirebase extends SongRepository {
     if (response.statusCode == 200) {
       // 1 - Send the retrieved list of songs
       Map<String, dynamic> songJson = json.decode(response.body);
-      return songJson.entries
-          .map((item) => SongDto.fromJson(item.key, item.value))
-          .toList();
+
+      List<Song> result = [];
+      for (final entry in songJson.entries) {
+        result.add(SongDto.fromJson(entry.key, entry.value));
+      }
+      return result;
     } else {
       // 2- Throw expcetion if any issue
       throw Exception('Failed to load posts');
