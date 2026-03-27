@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../model/artists/artist.dart';
 import '../../../model/songs/song.dart';
 
 class SongTile extends StatelessWidget {
@@ -8,9 +9,11 @@ class SongTile extends StatelessWidget {
     required this.song,
     required this.isPlaying,
     required this.onTap,
+    this.artist,
   });
 
   final Song song;
+  final Artist? artist;
   final bool isPlaying;
   final VoidCallback onTap;
 
@@ -29,7 +32,10 @@ class SongTile extends StatelessWidget {
           ),
           onTap: onTap,
           title: Text(song.title),
-          subtitle: Text('${song.duration.inMinutes} mins'),
+          subtitle: Text(
+            '${song.duration.inMinutes} mins '
+            '${artist == null ? '' : ' ${artist!.name} - ${artist!.genre}'}',
+          ),
           trailing: Text(
             isPlaying ? "Playing" : "",
             style: TextStyle(color: Colors.amber),
