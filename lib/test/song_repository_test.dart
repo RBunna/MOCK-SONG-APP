@@ -6,9 +6,13 @@ void main() async {
   //   Instantiate the  song_repository_mock
   SongRepository songRepository = SongRepositoryFirebase();
 
-  List<Song> songs = await songRepository.fetchSongs();
+  // List<Song> songs = await songRepository.fetchSongs();
 
-  for (var song in songs) {
-    print(song);
-  }
+  final song = await songRepository.fetchSongById('song_1');
+
+  // for (var song in songs) {
+  //   print(song);
+  // }
+
+  print(song);
 }
