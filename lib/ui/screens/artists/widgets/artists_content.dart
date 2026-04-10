@@ -44,7 +44,12 @@ class ArtistsContent extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           SizedBox(height: 16),
-          Text("Library", style: AppTextStyles.heading),
+          Row(
+            children: [
+              Expanded(child: Text("Artist", style: AppTextStyles.heading)),
+              IconButton(onPressed: () async => mv.fetchArtists(forceFetch: true), icon: Icon(Icons.refresh))
+            ],
+          ),
           SizedBox(height: 50),
 
           Expanded(child: content),

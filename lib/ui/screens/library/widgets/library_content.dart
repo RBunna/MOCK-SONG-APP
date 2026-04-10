@@ -46,17 +46,25 @@ class LibraryContent extends StatelessWidget {
         );
     }
 
-    return Padding(
-      padding: const EdgeInsets.all(20.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          SizedBox(height: 16),
-          Text("Library", style: AppTextStyles.heading),
-          SizedBox(height: 50),
-
-          Expanded(child: content),
-        ],
+    return RefreshIndicator(
+      onRefresh: () async => mv.fetchSong(forceFetch: true),
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(child: Text("Library", style: AppTextStyles.heading)),
+                IconButton(onPressed: () async => mv.fetchSong(forceFetch: true), icon: Icon(Icons.refresh))
+              ],
+            ),
+            SizedBox(height: 50),
+      
+            Expanded(child: content),
+          ],
+        ),
       ),
     );
   }
